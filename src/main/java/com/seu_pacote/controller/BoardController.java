@@ -22,6 +22,20 @@ import java.util.List;
 
 
 
+
+@GetMapping("/tasks/{taskId}/history")
+public String viewTaskHistory(@PathVariable Long taskId, Model model) {
+    Task task = boardService.getTaskById(taskId).orElseThrow();
+    List<History> historyList = historyRepository.findByTaskIdOrderByActionDateDesc(taskId);
+
+    model.addAttribute("task", task);
+    model.addAttribute("historyList", historyList);
+    return "task_history";
+}
+
+
+
+
 /**
  * Bloqueia ou desbloqueia uma tarefa, registrando motivo no histórico.
  */
