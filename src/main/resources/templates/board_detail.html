@@ -20,13 +20,19 @@
                     <h5 th:text="${column.name}">Nome da Coluna</h5>
                 </div>
                 <div class="card-body">
-                    <ul class="list-group">
-                        <li class="list-group-item" th:each="task : ${column.tasks}">
-                            <strong th:text="${task.title}">Título da Task</strong><br>
-                            <small th:text="${task.description}">Descrição da Task</small><br>
-                            <small>Status: <span th:text="${task.status}"></span></small><br>
-                            <a th:href="@{/boards/columns/{columnId}/tasks/new(columnId=${column.id})}" class="btn btn-sm btn-success mt-2">Adicionar Tarefa</a>
-                        </li>
+                    
+
+                    <li class="list-group-item" th:each="task : ${column.tasks}">
+    <strong th:text="${task.title}">Título da Task</strong><br>
+    <small th:text="${task.description}">Descrição da Task</small><br>
+    <small>Status: <span th:text="${task.status}"></span></small><br>
+    <a th:href="@{/boards/tasks/{taskId}/move(taskId=${task.id})}" class="btn btn-sm btn-warning mt-2">Mover</a>
+</li>
+
+                        
+
+
+                        
                     </ul>
                 </div>
             </div>
