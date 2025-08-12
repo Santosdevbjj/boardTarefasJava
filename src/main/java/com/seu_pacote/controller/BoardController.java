@@ -15,6 +15,46 @@ import java.util.Optional;
 
 
 
+package com.seuprojeto.board.controller;
+
+import com.seuprojeto.board.model.Board;
+import com.seuprojeto.board.model.Task;
+import com.seuprojeto.board.service.BoardService;
+import com.seuprojeto.board.service.TaskService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+@RequestMapping("/boards")
+public class BoardController {
+
+    private final BoardService boardService;
+    private final TaskService taskService;
+
+    public BoardController(BoardService boardService, TaskService taskService) {
+        this.boardService = boardService;
+        this.taskService = taskService;
+    }
+
+    // Visualizar um board específico
+    @GetMapping("/{id}")
+    public String viewBoard(@PathVariable Long id, Model model) {
+        Board board = boardService.findByIdWithTasks(id); // Carrega com tasks
+
+        // 🔹 Força carregamento do histórico de cada task (evita LazyInitializationException)
+        board.getColumns().forEach(column -> {
+            column.getTasks().forEach(task -> {
+                task.setHistory(taskService.getHistoryByTaskId(task.getId()));
+            });
+        });
+
+        model.addAttribute("board", board);
+        return "board_view";
+    }
+}
+
+
 // imports adicionais necessários
 import com.seuprojeto.board.model.TaskHistory;
 
