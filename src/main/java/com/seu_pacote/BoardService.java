@@ -29,6 +29,41 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+
+
+/**
+ * Bloqueia ou desbloqueia a tarefa e registra histórico.
+ */
+public void blockOrUnblockTask(Long taskId, String actionType, String reason) {
+    Task task = taskRepository.findById(taskId)
+            .orElseThrow(() -> new RuntimeException("Tarefa não encontrada"));
+
+    if ("block".equalsIgnoreCase(actionType)) {
+        task.setBlockReason(reason);
+        task.setStatus("Bloqueada");
+    } else if ("unblock".equalsIgnoreCase(actionType)) {
+        task.setUnblockReason(reason);
+        task.setBlockReason(null);
+        task.setStatus("Desbloqueada");
+    } else {
+        throw new IllegalArgumentException("Ação inválida: " + actionType);
+    }
+
+    task.setUpdatedAt(java.time.LocalDateTime.now());
+    taskRepository.save(task);
+
+    // Registra histórico
+    History history = new History();
+    history.setTask(task);
+    history.setAction(actionType.equals("block") ? "Bloqueada" : "Desbloqueada");
+    history.setReason(reason);
+    history.setActionDate(java.time.LocalDateTime.now());
+    historyRepository.save(history);
+}
+
+
+
+
 /**
  * Serviço que gerencia a lógica de negócios relacionada aos Boards, Columns e Tasks.
  * Agora com suporte a histórico (TaskHistory), bloqueio e desbloqueio.
