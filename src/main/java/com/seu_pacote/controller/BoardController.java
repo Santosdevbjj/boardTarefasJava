@@ -127,4 +127,45 @@ public class BoardController {
     }
 
     // Futuramente, métodos para mover tarefas, bloquear, desbloquear, etc.
+} 
+
+
+
+/**
+ * Exibe formulário para mover tarefa para outra coluna.
+ */
+@GetMapping("/tasks/{taskId}/move")
+public String showMoveTaskForm(@PathVariable("taskId") Long taskId, Model model) {
+    Optional<Task> taskOpt = boardService.getTaskById(taskId);
+    if (taskOpt.isEmpty()) {
+        model.addAttribute("errorMessage", "Tarefa não encontrada");
+        return "error";
+    }
+    Task task = taskOpt.get();
+    Board board = task.getColumn().getBoard();
+
+    model.addAttribute("task", task);
+    model.addAttribute("columns", board.getColumns());
+    return "task_move_form";
 }
+
+/**
+ * Processa a movimentação da tarefa.
+ */
+@PostMapping("/tasks/{taskId}/move")
+public String moveTask(
+        @PathVariable("taskId") Long taskId,
+        @RequestParam("targetColumnId") Long targetColumnId,
+        @RequestParam(value = "blockReason", required = false) String blockReason,
+        @RequestParam(value = "unblockReason", required = false) String unblockReason) {
+
+    boardService.moveTask(taskId, targetColumnId, blockReason, unblockReason);
+
+    // Redireciona para a página do board da tarefa
+    Task task = boardService.getTaskById(taskId).orElseThrow();
+    Long boardId = task.getColumn().getBoard().getId();
+
+    return "redirect:/boards/" + boardId;
+}
+
+    
