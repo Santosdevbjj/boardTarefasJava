@@ -5,6 +5,31 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+
+package com.seuprojeto.board.service;
+
+import com.seuprojeto.board.model.TaskHistory;
+import com.seuprojeto.board.repository.TaskHistoryRepository;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class TaskService {
+
+    private final TaskHistoryRepository taskHistoryRepository;
+
+    public TaskService(TaskHistoryRepository taskHistoryRepository) {
+        this.taskHistoryRepository = taskHistoryRepository;
+    }
+
+    // Carrega histórico de uma task específico
+    public List<TaskHistory> getHistoryByTaskId(Long taskId) {
+        return taskHistoryRepository.findByTaskIdOrderByActionDateDesc(taskId);
+    }
+}
+
+
 /**
  * Entidade que representa uma tarefa (card) dentro de uma coluna.
  * Agora com suporte a bloqueio (blocked) e histórico de eventos.
