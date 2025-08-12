@@ -652,11 +652,10 @@ git commit -m "Adiciona modal de bloqueio e registro no histórico da tarefa"
 git commit -m "Refatora controllers e atualiza documentação com SQL detalhado"
 
 
----
 
 
 
-![Diagrama ER](src/main/resources/static/images/diagrama_er_board.png)
+
 
 
 
