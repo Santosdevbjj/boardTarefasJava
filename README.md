@@ -633,29 +633,30 @@ CREATE TABLE task_history (
 
 **Exemplos de Commits Git**
 
-# Inicialização do projeto Spring Boot
+### Inicialização do projeto Spring Boot
 git commit -m "Inicializa projeto Spring Boot com dependências básicas"
 
-# Implementa modelos JPA
+### Implementa modelos JPA
 git commit -m "Adiciona entidades Board, Column, Task e TaskHistory com mapeamentos JPA"
 
-# Cria serviços e controladores
+### Cria serviços e controladores
 git commit -m "Implementa BoardService, TaskService e controladores com rotas básicas"
 
-# Adiciona interface HTML com Thymeleaf
+### Adiciona interface HTML com Thymeleaf
 git commit -m "Cria templates Thymeleaf para lista e visualização de boards"
 
-# Implementa funcionalidade de bloqueio/desbloqueio com histórico
+### Implementa funcionalidade de bloqueio/desbloqueio com histórico
 git commit -m "Adiciona modal de bloqueio e registro no histórico da tarefa"
 
-# Refatora código e adiciona SQL de criação de tabelas no README
+### Refatora código e adiciona SQL de criação de tabelas no README
 git commit -m "Refatora controllers e atualiza documentação com SQL detalhado"
-
 
 
 ---
 
 
+
+![Diagrama ER](src/main/resources/static/images/diagrama_er_board.png)
 
 
 
