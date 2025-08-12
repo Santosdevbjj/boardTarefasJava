@@ -23,6 +23,23 @@ import java.util.List;
 
 
 
+@GetMapping("/boards/{boardId}")
+public String viewBoard(@PathVariable Long boardId, Model model) {
+    Board board = boardService.getBoardById(boardId);
+
+    // Carrega histórico de cada tarefa
+    board.getColumns().forEach(column -> {
+        column.getTasks().forEach(task -> {
+            List<TaskHistory> history = taskHistoryService.getHistoryByTaskId(task.getId());
+            task.setHistoryList(history); // Adiciona o histórico diretamente no objeto
+        });
+    });
+
+    model.addAttribute("board", board);
+    return "board_view";
+}
+
+
 @GetMapping("/tasks/{taskId}/history")
 public String viewTaskHistory(@PathVariable Long taskId, Model model) {
     Task task = boardService.getTaskById(taskId).orElseThrow();
