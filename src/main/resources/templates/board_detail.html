@@ -32,6 +32,10 @@
 
 
 
+         <a th:href="@{/tasks/{taskId}/history(taskId=${task.id})}" class="btn btn-sm btn-info mt-2">Histórico</a>
+                    
+
+
                 <li class="list-group-item" th:each="task : ${column.tasks}">
     <strong th:text="${task.title}">Título da Task</strong><br>
     <small th:text="${task.description}">Descrição da Task</small><br>
