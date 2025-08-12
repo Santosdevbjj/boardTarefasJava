@@ -57,6 +57,32 @@
 </li>    
 
 
+
+
+<li class="list-group-item" th:each="task : ${column.tasks}">
+    <strong th:text="${task.title}"></strong><br>
+    <small th:text="${task.description}"></small><br>
+    <small>Status: <span th:text="${task.status}"></span></small><br>
+
+    <!-- Botão para Bloquear -->
+    <button type="button" class="btn btn-sm btn-danger mt-2"
+            th:if="${task.blockReason == null}"
+            onclick="openBlockModal([[${task.id}]], 'block')"
+            data-bs-toggle="modal" data-bs-target="#blockModal">
+        Bloquear
+    </button>
+
+    <!-- Botão para Desbloquear -->
+    <button type="button" class="btn btn-sm btn-success mt-2"
+            th:if="${task.blockReason != null}"
+            onclick="openBlockModal([[${task.id}]], 'unblock')"
+            data-bs-toggle="modal" data-bs-target="#blockModal">
+        Desbloquear
+    </button>
+</li>
+
+                    
+
                         
                     </ul>
                 </div>
