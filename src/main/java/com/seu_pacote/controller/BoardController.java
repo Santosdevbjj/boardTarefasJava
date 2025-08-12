@@ -1,0 +1,130 @@
+package com.seuprojeto.board.controller;
+
+import com.seuprojeto.board.model.Board;
+import com.seuprojeto.board.model.Column;
+import com.seuprojeto.board.model.Task;
+import com.seuprojeto.board.service.BoardService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+/**
+ * Controller para gerenciar as rotas e interações relacionadas a Boards.
+ */
+@Controller
+@RequestMapping("/boards")
+public class BoardController {
+
+    @Autowired
+    private BoardService boardService;
+
+    /**
+     * Lista todos os boards cadastrados.
+     */
+    @GetMapping
+    public String listBoards(Model model) {
+        model.addAttribute("boards", boardService.getAllBoards());
+        return "board_list"; // nome do template Thymeleaf
+    }
+
+    /**
+     * Exibe o formulário para criação de um novo Board.
+     */
+    @GetMapping("/new")
+    public String showCreateForm(Board board) {
+        return "board_form";
+    }
+
+    /**
+     * Processa a criação de um novo Board.
+     */
+    @PostMapping
+    public String createBoard(@Valid Board board, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "board_form";
+        }
+        boardService.createBoard(board);
+
+        // Após criar, redireciona para a lista de boards
+        return "redirect:/boards";
+    }
+
+    /**
+     * Exibe detalhes de um board específico, incluindo suas colunas e tarefas.
+     */
+    @GetMapping("/{id}")
+    public String getBoardDetail(@PathVariable("id") Long id, Model model) {
+        Optional<Board> boardOpt = boardService.getBoardById(id);
+        if (boardOpt.isEmpty()) {
+            model.addAttribute("errorMessage", "Board não encontrado");
+            return "error";
+        }
+        model.addAttribute("board", boardOpt.get());
+        return "board_detail";
+    }
+
+    /**
+     * Exclui um board pelo id.
+     */
+    @GetMapping("/delete/{id}")
+    public String deleteBoard(@PathVariable("id") Long id) {
+        boardService.deleteBoard(id);
+        return "redirect:/boards";
+    }
+
+    /**
+     * Exibe formulário para adicionar coluna ao Board.
+     */
+    @GetMapping("/{boardId}/columns/new")
+    public String showCreateColumnForm(@PathVariable("boardId") Long boardId, Model model) {
+        model.addAttribute("boardId", boardId);
+        model.addAttribute("column", new Column());
+        return "column_form";
+    }
+
+    /**
+     * Processa a criação da coluna no board.
+     */
+    @PostMapping("/{boardId}/columns")
+    public String createColumn(@PathVariable("boardId") Long boardId, @Valid Column column, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("boardId", boardId);
+            return "column_form";
+        }
+        boardService.addColumnToBoard(boardId, column);
+        return "redirect:/boards/" + boardId;
+    }
+
+    /**
+     * Exibe formulário para adicionar uma nova tarefa em uma coluna.
+     */
+    @GetMapping("/columns/{columnId}/tasks/new")
+    public String showCreateTaskForm(@PathVariable("columnId") Long columnId, Model model) {
+        model.addAttribute("columnId", columnId);
+        model.addAttribute("task", new Task());
+        return "task_form";
+    }
+
+    /**
+     * Processa a criação da tarefa em uma coluna.
+     */
+    @PostMapping("/columns/{columnId}/tasks")
+    public String createTask(@PathVariable("columnId") Long columnId, @Valid Task task, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("columnId", columnId);
+            return "task_form";
+        }
+        boardService.addTaskToColumn(columnId, task);
+
+        // Obter o boardId para redirecionar
+        Long boardId = task.getColumn().getBoard().getId();
+        return "redirect:/boards/" + boardId;
+    }
+
+    // Futuramente, métodos para mover tarefas, bloquear, desbloquear, etc.
+}
