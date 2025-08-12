@@ -15,7 +15,9 @@ Aprenda a criar um board de tarefas em Java, passando por todas as etapas do des
 
 > **Visão geral**
 
-Este projeto implementa um Board de Tarefas (quadro/kanban) em Java usando Spring Boot, Spring Data JPA (Hibernate) e Thymeleaf como engine de templates. O objetivo é ensinar passo a passo como criar entidades, repositórios, serviços, controllers, UI (templates Thymeleaf) e recursos como bloqueio/desbloqueio de tarefas com histórico, movimentação entre colunas e persistência em MySQL.
+Este projeto implementa um Board de Tarefas (quadro/kanban) em Java usando Spring Boot, Spring Data JPA (Hibernate) e Thymeleaf como engine de templates.
+
+O objetivo é ensinar passo a passo como criar entidades, repositórios, serviços, controllers, UI (templates Thymeleaf) e recursos como bloqueio/desbloqueio de tarefas com histórico, movimentação entre colunas e persistência em MySQL.
 
 
 
@@ -24,31 +26,31 @@ Este projeto implementa um Board de Tarefas (quadro/kanban) em Java usando Sprin
 
 **Índice**
 
-#Descrição rápida
+# Descrição rápida
 
-#Tecnologias
+# Tecnologias
 
-#Estrutura de pastas
+# Estrutura de pastas
 
-#Entidades (Model) — explicação detalhada
+# Entidades (Model) — explicação detalhada
 
-#Repositórios
+# Repositórios
 
-#Serviços (Service) — métodos e responsabilidades
+# Serviços (Service) — métodos e responsabilidades
 
-#Controllers — rotas e o que fazem
+# Controllers — rotas e o que fazem
 
-#Templates Thymeleaf (.html) — cada arquivo e propósito
+# Templates Thymeleaf (.html) — cada arquivo e propósito
 
-#Configuração (application.properties / MySQL)
+# Configuração (application.properties / MySQL)
 
-#Como rodar o projeto (passo a passo)
+# Como rodar o projeto (passo a passo)
 
-#Pontos importantes / erros comuns e soluções
+# Pontos importantes / erros comuns e soluções
 
-#Melhorias futuras sugeridas
+# Melhorias futuras sugeridas
 
-#Licença / Autor
+# Licença / Autor
 
 
 
@@ -163,7 +165,7 @@ List<Column> columns — colunas associadas ao board
 
 Relacionamentos: @OneToMany para Column (mappedBy = "board", cascade = ALL).
 
-Métodos relevantes:
+**Métodos relevantes:**
 
 addColumn(Column column) — adiciona coluna e seta column.setBoard(this);
 
@@ -176,7 +178,7 @@ Responsabilidade: representar o quadro e gerenciar sua coleção de colunas.
 
 ---
 
-Column (Column.java)
+**Column (Column.java)**
 
 Campos:
 
@@ -189,7 +191,7 @@ Board board — @ManyToOne
 List<Task> tasks — @OneToMany com cascade
 
 
-Métodos:
+**Métodos:**
 
 addTask(Task task), removeTask(Task task) — cuidam das referências bidirecionais.
 
@@ -200,7 +202,7 @@ Responsabilidade: representar uma coluna do board e agrupar tasks.
 
 ---
 
-Task (Task.java)
+**Task (Task.java)**
 
 Campos principais:
 
@@ -225,7 +227,7 @@ Column column — @ManyToOne
 List<TaskHistory> history — @OneToMany contendo eventos (BLOCK, UNBLOCK, MOVE...)
 
 
-Métodos relevantes:
+**Métodos relevantes:**
 
 Getters/Setters com atualização de updatedAt sempre que o conteúdo relevante muda.
 
@@ -238,7 +240,7 @@ Notas: createdAt inicializado no construtor; updatedAt atualizado nas alteraçõ
 
 ---
 
-TaskHistory (TaskHistory.java)
+**TaskHistory (TaskHistory.java)**
 
 Campos:
 
@@ -263,16 +265,16 @@ Responsabilidade: auditar tudo que acontece com a task (audit log).
 
 ---
 
-TaskEventType (enum)
+**TaskEventType (enum)**
 
 Valores: CREATE, UPDATE, MOVE, BLOCK, UNBLOCK, CANCEL.
 
 
 ---
 
-Repositórios (repository)
+**Repositórios (repository)**
 
-> Pacote: com.seuprojeto.board.repository
+> **Pacote: com.seuprojeto.board.repository**
 
 
 
@@ -293,9 +295,9 @@ Essas interfaces já dão acesso a métodos CRUD prontos (save, findById, findAl
 
 ---
 
-Serviços (service) — responsabilidades e métodos
+**Serviços (service) — responsabilidades e métodos**
 
-> Pacote: com.seuprojeto.board.service
+> **Pacote: com.seuprojeto.board.service**
 
 
 
@@ -328,7 +330,7 @@ CompletableFuture<Task> saveTaskAsync(Task task) — exemplo de operação assí
 
 
 
-TaskService
+**TaskService**
 
 List<TaskHistory> getHistoryByTaskId(Long taskId) — delega ao TaskHistoryRepository para busca ordenada do histórico.
 
@@ -336,13 +338,13 @@ List<TaskHistory> getHistoryByTaskId(Long taskId) — delega ao TaskHistoryRepos
 
 ---
 
-Controllers — rotas e o que fazem
+**Controllers — rotas e o que fazem**
 
 > Pacote: com.seuprojeto.board.controller
 
 
 
-BoardController (rotas principais)
+**BoardController (rotas principais)**
 
 GET /boards — lista boards (board_list.html).
 
