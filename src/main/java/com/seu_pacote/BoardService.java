@@ -105,12 +105,19 @@ public class BoardService {
      * @param targetColumnId ID da coluna destino.
      * @return Tarefa atualizada.
      */
-    public Task moveTask(Long taskId, Long targetColumnId) {
-        Optional<Task> taskOpt = taskRepository.findById(taskId);
-        Optional<Column> targetColOpt = columnRepository.findById(targetColumnId);
+   
 
-        if (taskOpt.isPresent() && targetColOpt.isPresent()) {
-            Task task = taskOpt.get();
+
+
+
+    
+    /**
+   // public Task moveTask(Long taskId, Long targetColumnId) {
+   // Optional<Task> taskOpt = taskRepository.findById(taskId);
+      //  Optional<Column> targetColOpt = columnRepository.findById(targetColumnId);
+
+        //.if (taskOpt.isPresent() && targetColOpt.isPresent()) {
+//  Task task = taskOpt.get();
             Column currentColumn = task.getColumn();
             Column targetColumn = targetColOpt.get();
 
@@ -130,6 +137,58 @@ public class BoardService {
         }
     }
 
+*/
+
+
+    /**
+ * Move uma tarefa de uma coluna para outra, atualizando status e datas.
+ *
+ * @param taskId ID da tarefa a ser movida.
+ * @param targetColumnId ID da coluna destino.
+ * @param blockReason razão do bloqueio, caso a tarefa esteja sendo bloqueada.
+ * @param unblockReason razão do desbloqueio, caso a tarefa esteja sendo desbloqueada.
+ * @return Task atualizada.
+ */
+public Task moveTask(Long taskId, Long targetColumnId, String blockReason, String unblockReason) {
+    Optional<Task> taskOpt = taskRepository.findById(taskId);
+    Optional<Column> targetColOpt = columnRepository.findById(targetColumnId);
+
+    if (taskOpt.isEmpty() || targetColOpt.isEmpty()) {
+        throw new RuntimeException("Task ou coluna destino não encontrado");
+    }
+
+    Task task = taskOpt.get();
+    Column currentColumn = task.getColumn();
+    Column targetColumn = targetColOpt.get();
+
+    if (currentColumn != null) {
+        currentColumn.removeTask(task);
+        columnRepository.save(currentColumn);
+    }
+
+    targetColumn.addTask(task);
+    columnRepository.save(targetColumn);
+
+    // Atualiza status baseado no nome da coluna destino (exemplo)
+    task.setStatus(targetColumn.getName());
+
+    // Atualiza razão de bloqueio/desbloqueio, se houver
+    if (blockReason != null && !blockReason.isEmpty()) {
+        task.setBlockReason(blockReason);
+    }
+    if (unblockReason != null && !unblockReason.isEmpty()) {
+        task.setUnblockReason(unblockReason);
+    }
+
+    // Atualiza data da última modificação
+    task.setUpdatedAt(java.time.LocalDateTime.now());
+
+    taskRepository.save(task);
+
+    return task;
+}
+
+    
     /**
      * Salva uma tarefa assincronamente para não bloquear a UI.
      * @param task Tarefa a ser salva.
