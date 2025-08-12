@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="'Board - ' + ${board.name}">Board Detalhes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-4">
+
+    <h1 th:text="${board.name}">Nome do Board</h1>
+
+    <a th:href="@{/boards}" class="btn btn-secondary mb-3">Voltar</a>
+
+    <h3>Colunas</h3>
+    <a th:href="@{/boards/{boardId}/columns/new(boardId=${board.id})}" class="btn btn-primary mb-3">Adicionar Coluna</a>
+
+    <div class="row">
+        <div class="col-md-4" th:each="column : ${board.columns}">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 th:text="${column.name}">Nome da Coluna</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item" th:each="task : ${column.tasks}">
+                            <strong th:text="${task.title}">Título da Task</strong><br>
+                            <small th:text="${task.description}">Descrição da Task</small><br>
+                            <small>Status: <span th:text="${task.status}"></span></small><br>
+                            <a th:href="@{/boards/columns/{columnId}/tasks/new(columnId=${column.id})}" class="btn btn-sm btn-success mt-2">Adicionar Tarefa</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
