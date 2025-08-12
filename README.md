@@ -547,6 +547,121 @@ Ou enviar um git diff com todas as alterações para commit.
 
 
 
+
+---
+
+
+**Projeto: Board de Tarefas em Java com Spring Boot e Thymeleaf**
+
+**Descrição**
+
+Este projeto implementa um Board de Tarefas no estilo Kanban, com gerenciamento de boards, colunas e cards (tarefas). Permite criar múltiplos boards, adicionar tarefas, mover, bloquear/desbloquear e consultar histórico de ações.
+
+
+<img width="851" height="949" alt="Screenshot_20250812-183943" src="https://github.com/user-attachments/assets/adcdc537-0857-4a12-a706-a8f324d940c6" />
+
+
+
+**Funcionalidades**
+
+Criar e gerenciar múltiplos boards.
+
+Adicionar colunas personalizadas.
+
+Criar, mover, bloquear e desbloquear tarefas.
+
+Registrar motivo de bloqueio/desbloqueio.
+
+Histórico de ações de cada tarefa.
+
+
+**Classes Principais**
+
+**BoardController:** Controla rotas para criação e visualização de boards.
+
+**TaskController:** Controla ações sobre tarefas.
+
+**BoardService / TaskService: Lógica de negócio.**
+
+Board / Column / Task / TaskHistory: Modelos JPA.
+
+Repositories: Interfaces para persistência.
+
+
+**Templates HTML**
+
+board_list.html: Lista de boards.
+
+board_view.html: Exibe colunas e tarefas.
+
+modal_bloqueio.html: Formulário modal para bloqueio de tarefa.
+
+modal_historico.html: Lista de histórico de uma tarefa.
+
+
+**SQL de Criação de Tabelas**
+
+CREATE TABLE boards (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE columns (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    board_id BIGINT,
+    FOREIGN KEY (board_id) REFERENCES boards(id) ON DELETE CASCADE
+);
+
+CREATE TABLE tasks (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    status VARCHAR(50),
+    column_id BIGINT,
+    FOREIGN KEY (column_id) REFERENCES columns(id) ON DELETE CASCADE
+);
+
+CREATE TABLE task_history (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    task_id BIGINT,
+    action_type VARCHAR(50),
+    action_reason TEXT,
+    action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (task_id) REFERENCES tasks(id) ON DELETE CASCADE
+);
+
+**Exemplos de Commits Git**
+
+# Inicialização do projeto Spring Boot
+git commit -m "Inicializa projeto Spring Boot com dependências básicas"
+
+# Implementa modelos JPA
+git commit -m "Adiciona entidades Board, Column, Task e TaskHistory com mapeamentos JPA"
+
+# Cria serviços e controladores
+git commit -m "Implementa BoardService, TaskService e controladores com rotas básicas"
+
+# Adiciona interface HTML com Thymeleaf
+git commit -m "Cria templates Thymeleaf para lista e visualização de boards"
+
+# Implementa funcionalidade de bloqueio/desbloqueio com histórico
+git commit -m "Adiciona modal de bloqueio e registro no histórico da tarefa"
+
+# Refatora código e adiciona SQL de criação de tabelas no README
+git commit -m "Refatora controllers e atualiza documentação com SQL detalhado"
+
+
+
+---
+
+
+
+
+
+
+
+
 ---
 
 **Licença / Autor**
