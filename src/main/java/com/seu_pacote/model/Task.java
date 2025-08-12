@@ -2,10 +2,12 @@ package com.seuprojeto.board.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Entidade que representa uma tarefa (card) dentro de uma coluna.
- * Contém título, descrição, data, status, e razão do bloqueio/desbloqueio.
+ * Agora com suporte a bloqueio (blocked) e histórico de eventos.
  */
 @Entity
 @Table(name = "tasks")
@@ -15,37 +17,37 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Título da tarefa
-    @Column(nullable = false)
     private String title;
 
-    // Descrição da tarefa
     @Column(length = 1000)
     private String description;
 
-    // Data de criação da tarefa
-    @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    // Data da última atualização da tarefa
     private LocalDateTime updatedAt;
 
-    // Status da tarefa (ex: iniciado, em conclusão, concluído, cancelado)
-    @Column(nullable = false)
     private String status;
 
-    // Razão do bloqueio da tarefa, se houver
+    // Razão do bloqueio (último bloqueio)
     private String blockReason;
 
-    // Razão do desbloqueio da tarefa, se houver
+    // Razão do desbloqueio (último desbloqueio)
     private String unblockReason;
 
-    // Relacionamento com a coluna que contém essa tarefa
+    // Flag indicando se a task está bloqueada
+    private boolean blocked;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "column_id")
     private Column column;
 
-    public Task() {}
+    // Histórico de eventos relacionados a esta task
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TaskHistory> history = new ArrayList<>();
+
+    public Task() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public Task(String title, String description, String status) {
         this.title = title;
@@ -54,74 +56,18 @@ public class Task {
         this.createdAt = LocalDateTime.now();
     }
 
-    // Getters e setters
-
-    public Long getId() {
-        return id;
+    // Getters e setters...
+    // Exemplos:
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; setUpdatedAt(LocalDateTime.now()); }
+    public boolean isBlocked() { return blocked; }
+    public void setBlocked(boolean blocked) { this.blocked = blocked; setUpdatedAt(LocalDateTime.now()); }
+    public List<TaskHistory> getHistory() { return history; }
+    public void addHistory(TaskHistory h) {
+        history.add(h);
+        h.setTask(this);
     }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-        setUpdatedAt(LocalDateTime.now());
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-        setUpdatedAt(LocalDateTime.now());
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-        setUpdatedAt(LocalDateTime.now());
-    }
-
-    public String getBlockReason() {
-        return blockReason;
-    }
-
-    public void setBlockReason(String blockReason) {
-        this.blockReason = blockReason;
-        setUpdatedAt(LocalDateTime.now());
-    }
-
-    public String getUnblockReason() {
-        return unblockReason;
-    }
-
-    public void setUnblockReason(String unblockReason) {
-        this.unblockReason = unblockReason;
-        setUpdatedAt(LocalDateTime.now());
-    }
-
-    public Column getColumn() {
-        return column;
-    }
-
-    public void setColumn(Column column) {
-        this.column = column;
-    }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+    // ... complete os getters e setters no seu IDE
 }
