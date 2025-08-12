@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Histórico da Tarefa</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-4">
+    <h1>Histórico da Task</h1>
+
+    <a th:href="@{/boards}" class="btn btn-secondary mb-3">Voltar aos Boards</a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Evento</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Motivo</th>
+                <th>Actor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="h : ${history}">
+                <td th:text="${#dates.format(h.eventAt, 'dd/MM/yyyy HH:mm:ss')}">01/01/2025</td>
+                <td th:text="${h.eventType}">MOVE</td>
+                <td th:text="${h.fromColumnName}">Inicial</td>
+                <td th:text="${h.toColumnName}">Final</td>
+                <td th:text="${h.reason}">Motivo do bloqueio</td>
+                <td th:text="${h.actor}">Sérgio</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/boards/{boardId}(boardId=${history.size() > 0 ? history.get(0).task.column.board.id : 0})}" class="btn btn-secondary">Voltar</a>
+</body>
+</html>
