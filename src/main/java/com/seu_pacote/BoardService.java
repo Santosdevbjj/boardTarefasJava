@@ -200,4 +200,19 @@ public Task moveTask(Long taskId, Long targetColumnId, String blockReason, Strin
     }
 
     // Adicione outros métodos para bloquear, desbloquear, cancelar, etc.
+} 
+
+
+
+/**
+ * Busca uma tarefa pelo seu ID.
+ * @param id ID da tarefa.
+ * @return Optional<Task>
+ */
+public Optional<Task> getTaskById(Long id) {
+    return taskRepository.findById(id);
 }
+
+
+
+
