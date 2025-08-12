@@ -66,3 +66,51 @@
 
 </body>
 </html>
+
+
+<!-- Modal de Bloqueio/Desbloqueio -->
+<div class="modal fade" id="blockModal" tabindex="-1" aria-labelledby="blockModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form th:action="@{/boards/tasks/block}" method="post">
+        <div class="modal-header">
+          <h5 class="modal-title" id="blockModalLabel">Alterar Status da Tarefa</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+
+          <!-- ID da Tarefa (hidden) -->
+          <input type="hidden" name="taskId" id="modalTaskId">
+
+          <!-- Ação: bloquear ou desbloquear -->
+          <input type="hidden" name="actionType" id="modalActionType">
+
+          <div class="mb-3">
+            <label for="reason" class="form-label">Motivo</label>
+            <textarea id="reason" name="reason" class="form-control" rows="3" required></textarea>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Função para abrir o modal com dados
+  function openBlockModal(taskId, actionType) {
+    document.getElementById("modalTaskId").value = taskId;
+    document.getElementById("modalActionType").value = actionType;
+    document.getElementById("blockModalLabel").innerText = 
+        (actionType === "block") ? "Bloquear Tarefa" : "Desbloquear Tarefa";
+  }
+</script>
+
+
+
+
+
