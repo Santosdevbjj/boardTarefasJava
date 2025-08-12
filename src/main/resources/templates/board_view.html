@@ -1,0 +1,31 @@
+<div class="card mb-3" th:each="task : ${column.tasks}">
+    <div class="card-body">
+        <h5 class="card-title" th:text="${task.title}"></h5>
+        <p class="card-text" th:text="${task.description}"></p>
+
+        <!-- Botões de Ação -->
+        <div class="d-flex gap-2">
+            <!-- Botão Bloquear -->
+            <button class="btn btn-sm btn-danger"
+                    th:if="${task.status != 'BLOQUEADA'}"
+                    data-bs-toggle="modal"
+                    th:attr="data-bs-target='#modalBloqueio' + ${task.id}">
+                <i class="bi bi-lock-fill"></i> Bloquear
+            </button>
+
+            <!-- Botão Desbloquear -->
+            <a th:href="@{/tasks/{id}/unblock(id=${task.id})}"
+               class="btn btn-sm btn-success"
+               th:if="${task.status == 'BLOQUEADA'}">
+                <i class="bi bi-unlock-fill"></i> Desbloquear
+            </a>
+
+            <!-- Botão Histórico -->
+            <button class="btn btn-sm btn-secondary"
+                    data-bs-toggle="modal"
+                    th:attr="data-bs-target='#modalHistorico' + ${task.id}">
+                <i class="bi bi-clock-history"></i> Histórico
+            </button>
+        </div>
+    </div>
+</div>
