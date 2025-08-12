@@ -14,6 +14,149 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+
+
+package com.seuprojeto.board.service;
+
+import com.seuprojeto.board.model.*;
+import com.seuprojeto.board.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+
+/**
+ * Serviço que gerencia a lógica de negócios relacionada aos Boards, Columns e Tasks.
+ * Agora com suporte a histórico (TaskHistory), bloqueio e desbloqueio.
+ */
+@Service
+public class BoardService {
+
+    @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
+    private ColumnRepository columnRepository;
+
+    @Autowired
+    private TaskRepository taskRepository;
+
+    @Autowired
+    private TaskHistoryRepository taskHistoryRepository;
+
+    // --- Métodos já existentes (createBoard, getAllBoards, etc.) mantidos ---
+
+    /**
+     * Move uma tarefa de uma coluna para outra, atualizando status e criando um registro de histórico.
+     */
+    @Transactional
+    public Task moveTask(Long taskId, Long targetColumnId, String blockReason, String unblockReason, String actor) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task não encontrada: " + taskId));
+        Column target = columnRepository.findById(targetColumnId)
+                .orElseThrow(() -> new RuntimeException("Coluna destino não encontrada: " + targetColumnId));
+
+        Column from = task.getColumn();
+        String fromName = from != null ? from.getName() : null;
+        String toName = target.getName();
+
+        // remove da coluna atual (se houver) e adiciona na coluna destino
+        if (from != null) {
+            from.removeTask(task);
+            columnRepository.save(from);
+        }
+        target.addTask(task);
+        columnRepository.save(target);
+
+        // atualiza status para o nome da coluna destino (padrão)
+        task.setStatus(toName);
+
+        // aplicar bloqueio / desbloqueio se enviados
+        if (blockReason != null && !blockReason.isBlank()) {
+            task.setBlocked(true);
+            task.setBlockReason(blockReason);
+            // cria registro de BLOCK
+            TaskHistory hBlock = new TaskHistory(task, TaskEventType.BLOCK, blockReason, fromName, toName, actor);
+            taskHistoryRepository.save(hBlock);
+        }
+        if (unblockReason != null && !unblockReason.isBlank()) {
+            task.setBlocked(false);
+            task.setUnblockReason(unblockReason);
+            TaskHistory hUnblock = new TaskHistory(task, TaskEventType.UNBLOCK, unblockReason, fromName, toName, actor);
+            taskHistoryRepository.save(hUnblock);
+        }
+
+        // registra o MOVE
+        TaskHistory hMove = new TaskHistory(task, TaskEventType.MOVE, null, fromName, toName, actor);
+        taskHistoryRepository.save(hMove);
+
+        task.setUpdatedAt(java.time.LocalDateTime.now());
+        taskRepository.save(task);
+
+        return task;
+    }
+
+    /**
+     * Bloqueia uma task e cria registro de histórico.
+     */
+    @Transactional
+    public Task blockTask(Long taskId, String reason, String actor) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task não encontrada: " + taskId));
+        if (!task.isBlocked()) {
+            task.setBlocked(true);
+            task.setBlockReason(reason);
+            task.setUpdatedAt(java.time.LocalDateTime.now());
+            taskRepository.save(task);
+        }
+        TaskHistory h = new TaskHistory(task, TaskEventType.BLOCK, reason, task.getColumn() != null ? task.getColumn().getName() : null, null, actor);
+        taskHistoryRepository.save(h);
+        return task;
+    }
+
+    /**
+     * Desbloqueia uma task e cria registro de histórico.
+     */
+    @Transactional
+    public Task unblockTask(Long taskId, String reason, String actor) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task não encontrada: " + taskId));
+        if (task.isBlocked()) {
+            task.setBlocked(false);
+            task.setUnblockReason(reason);
+            task.setUpdatedAt(java.time.LocalDateTime.now());
+            taskRepository.save(task);
+        }
+        TaskHistory h = new TaskHistory(task, TaskEventType.UNBLOCK, reason, task.getColumn() != null ? task.getColumn().getName() : null, null, actor);
+        taskHistoryRepository.save(h);
+        return task;
+    }
+
+    /**
+     * Lista o histórico da task (mais recente primeiro).
+     */
+    public List<TaskHistory> getTaskHistory(Long taskId) {
+        return taskHistoryRepository.findByTaskIdOrderByEventAtDesc(taskId);
+    }
+
+    /**
+     * Salva uma tarefa assincronamente para não bloquear a UI.
+     */
+    @Async
+    public CompletableFuture<Task> saveTaskAsync(Task task) {
+        return CompletableFuture.completedFuture(taskRepository.save(task));
+    }
+
+    // outros métodos...
+}
+
+
+
+
 /**
  * Serviço que gerencia a lógica de negócios relacionada aos Boards, Columns e Tasks.
  */
