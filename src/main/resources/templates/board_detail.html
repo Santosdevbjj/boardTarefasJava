@@ -128,7 +128,71 @@
       </form>
     </div>
   </div>
+</div> 
+
+
+<!-- Modal de Bloqueio -->
+<div class="modal fade" th:id="'modalBloqueio' + ${task.id}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form th:action="@{/tasks/{id}/block(id=${task.id})}" method="post" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bloquear Tarefa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label>Motivo do Bloqueio:</label>
+                    <textarea class="form-control" name="reason" required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger">Confirmar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </form>
+    </div>
 </div>
+
+<!-- Modal de Histórico -->
+<div class="modal fade" th:id="'modalHistorico' + ${task.id}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Histórico - <span th:text="${task.title}"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <table class="table table-striped mb-0">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Ação</th>
+                            <th>Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hist : ${task.historyList}">
+                            <td th:text="${#temporals.format(hist.actionDate, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <span th:text="${hist.action}"
+                                      th:classappend="${hist.action == 'Bloqueada'} ? 'text-danger fw-bold' : 'text-success fw-bold'">
+                                </span>
+                            </td>
+                            <td th:text="${hist.reason}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(task.historyList)}">
+                            <td colspan="3" class="text-center text-muted">Nenhum registro encontrado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 <script>
   // Função para abrir o modal com dados
