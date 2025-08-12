@@ -26,31 +26,31 @@ O objetivo é ensinar passo a passo como criar entidades, repositórios, serviç
 
 **Índice**
 
-# Descrição rápida
+## Descrição rápida
 
-# Tecnologias
+## Tecnologias
 
-# Estrutura de pastas
+## Estrutura de pastas
 
-# Entidades (Model) — explicação detalhada
+## Entidades (Model) — explicação detalhada
 
-# Repositórios
+## Repositórios
 
-# Serviços (Service) — métodos e responsabilidades
+## Serviços (Service) — métodos e responsabilidades
 
-# Controllers — rotas e o que fazem
+## Controllers — rotas e o que fazem
 
-# Templates Thymeleaf (.html) — cada arquivo e propósito
+## Templates Thymeleaf (.html) — cada arquivo e propósito
 
-# Configuração (application.properties / MySQL)
+## Configuração (application.properties / MySQL)
 
-# Como rodar o projeto (passo a passo)
+## Como rodar o projeto (passo a passo)
 
-# Pontos importantes / erros comuns e soluções
+## Pontos importantes / erros comuns e soluções
 
-# Melhorias futuras sugeridas
+## Melhorias futuras sugeridas
 
-# Licença / Autor
+## Licença / Autor
 
 
 
@@ -104,39 +104,10 @@ O projeto também exemplifica uso de operações assíncronas com @Async (por ex
 
 **Estrutura de pastas (sugestão / padrão usado no projeto)**
 
-src/
- ├── main/
- │    ├── java/
- │    │    └── com/seuprojeto/board/
- │    │         ├── BoardTarefasApplication.java        # classe principal (@SpringBootApplication)
- │    │         ├── controller/
- │    │         │    └── BoardController.java
- │    │         ├── model/
- │    │         │    ├── Board.java
- │    │         │    ├── Column.java
- │    │         │    ├── Task.java
- │    │         │    ├── TaskHistory.java
- │    │         │    └── TaskEventType.java
- │    │         ├── repository/
- │    │         │    ├── BoardRepository.java
- │    │         │    ├── ColumnRepository.java
- │    │         │    ├── TaskRepository.java
- │    │         │    └── TaskHistoryRepository.java
- │    │         └── service/
- │    │              ├── BoardService.java
- │    │              └── TaskService.java
- │    └── resources/
- │         ├── application.properties
- │         └── templates/
- │              ├── board_list.html
- │              ├── board_form.html
- │              ├── board_view.html        # view principal do board com modais integrados (versão final)
- │              ├── board_detail.html      # versão alternativa / histórica
- │              ├── column_form.html
- │              ├── task_form.html
- │              ├── task_move_form.html
- │              └── task_history.html
- └── test/
+
+<img width="1080" height="1689" alt="Screenshot_20250812-182610" src="https://github.com/user-attachments/assets/543e6fe9-3d62-4b0c-86da-65e9eda2fe12" />
+
+ 
       └── java/...                         # testes unitários (se implementados)
 
 > Observação: board_view.html é a versão final integrada com modais de bloqueio e histórico em linha. Alguns arquivos como board_detail.html existem como versões anteriores/alternativas — mantidos para referência.
@@ -301,7 +272,7 @@ Essas interfaces já dão acesso a métodos CRUD prontos (save, findById, findAl
 
 
 
-BoardService (exemplos de métodos implementados)
+**BoardService (exemplos de métodos implementados)**
 
 Board createBoard(Board board) — salva um novo board.
 
@@ -326,7 +297,7 @@ List<TaskHistory> getTaskHistory(Long taskId) — retorna histórico ordenado.
 CompletableFuture<Task> saveTaskAsync(Task task) — exemplo de operação assíncrona com @Async.
 
 
-> Observação: Há uso de @Transactional em operações que envolvem múltiplas alterações (ex.: moveTask) para garantir atomicidade.
+> **Observação:** Há uso de @Transactional em operações que envolvem múltiplas alterações (ex.: moveTask) para garantir atomicidade.
 
 
 
@@ -348,17 +319,17 @@ List<TaskHistory> getHistoryByTaskId(Long taskId) — delega ao TaskHistoryRepos
 
 GET /boards — lista boards (board_list.html).
 
-Método: listBoards(Model model)
+**Método:** listBoards(Model model)
 
 
 GET /boards/new — exibe formulário para criar board (board_form.html).
 
-Método: showCreateForm(Board board)
+**Método:** showCreateForm(Board board)
 
 
 POST /boards — cria board (processa submit de board_form).
 
-Método: createBoard(...)
+**Método:** createBoard(...)
 
 
 GET /boards/{id} — view detalhada do board (usar board_view.html — carrega colunas, tasks e pré-carrega histórico em memória para evitar LazyInitializationException).
@@ -368,7 +339,7 @@ Método: viewBoard(@PathVariable Long id, Model model)
 
 GET /boards/delete/{id} — exclui um board e redireciona.
 
-Método: deleteBoard(Long id)
+**Método:** deleteBoard(Long id)
 
 
 GET /boards/{boardId}/columns/new & POST /boards/{boardId}/columns — criar colunas.
@@ -378,7 +349,7 @@ Métodos: showCreateColumnForm, createColumn
 
 GET /boards/columns/{columnId}/tasks/new & POST /boards/columns/{columnId}/tasks — criar tasks em coluna.
 
-Métodos: showCreateTaskForm, createTask
+**Métodos:** showCreateTaskForm, createTask
 
 
 GET /boards/tasks/{taskId}/move & POST /boards/tasks/{taskId}/move — form + processamento para mover task entre colunas (pode receber blockReason e unblockReason).
@@ -390,38 +361,38 @@ GET /tasks/{id}/unblock or POST /tasks/{id}/unblock — desbloqueia task e grava
 GET /boards/tasks/{taskId}/history — exibe página de histórico (alternativa de modal): task_history.html.
 
 
-> Observação: Em versões finais algumas rotas foram levemente renomeadas (ex.: /boards/{id} ficou a rota central que retorna board_view.html). Ajuste conforme seu BoardController final.
+> **Observação:** Em versões finais algumas rotas foram levemente renomeadas (ex.: /boards/{id} ficou a rota central que retorna board_view.html). Ajuste conforme seu BoardController final.
 
 
 
 
 ---
 
-Templates Thymeleaf (.html) — descrição detalhada
+**Templates Thymeleaf (.html) — descrição detalhada**
 
 > Local: src/main/resources/templates/
 
 
 
-board_list.html
+**board_list.html**
 
 Lista todos os boards com botões: Ver, Criar Novo, Excluir.
 
 Contém tabela com boards (modelo enviado pelo controller).
 
 
-board_form.html
+**board_form.html**
 
 Formulário simples com input para name do board.
 
 
-board_view.html (versão final)
+**board_view.html (versão final)**
 
 Página principal que exibe o board selecionado com suas colunas (em colunas Bootstrap) e cards (tasks) dentro de cada coluna.
 
 Cada task tem botões: Bloquear (abre modal), Desbloquear (ação direta), Movimentar (abre formulário), Histórico (abre modal com lista de eventos).
 
-Possui os modais (um por task):
+**Possui os modais (um por task):**
 
 Modal de Bloqueio — formulário para informar motivo (POST /tasks/{id}/block).
 
@@ -456,7 +427,7 @@ Página que mostra todo o histórico de uma task (se preferir abrir em página e
 
 Configuração (application.properties)
 
-Exemplo mínimo (MySQL):
+**Exemplo mínimo (MySQL):**
 
 spring.datasource.url=jdbc:mysql://localhost:3306/boarddb?useSSL=false&serverTimezone=UTC
 spring.datasource.username=root
@@ -467,7 +438,7 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.thymeleaf.cache=false
 
-Criar database:
+**Criar database:**
 
 CREATE DATABASE boarddb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -478,7 +449,7 @@ CREATE DATABASE boarddb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 ---
 
-Como rodar o projeto (passo a passo)
+**Como rodar o projeto (passo a passo)**
 
 1. Clonar o repositório (quando existir no GitHub):
 
@@ -508,7 +479,7 @@ mvn clean spring-boot:run
 
 http://localhost:8080/boards
 
-6. Empacotar (opcional):
+**6. Empacotar (opcional):**
 
 
 
@@ -518,7 +489,7 @@ java -jar target/board-tarefas-0.0.1-SNAPSHOT.jar
 
 ---
 
-Pontos importantes / erros comuns e soluções
+**Pontos importantes / erros comuns e soluções**
 
 LazyInitializationException: ocorre quando Thymeleaf tenta acessar coleções lazy após sessão/transaction fechada. Solução aplicada: pré-carregar o histórico no controller chamando um serviço (TaskService.getHistoryByTaskId(...)) e setando a lista em cada task antes de retornar a view.
 
@@ -532,7 +503,7 @@ Async: métodos anotados com @Async retornam CompletableFuture e precisam de @En
 
 ---
 
-Testes e validações (sugestões)
+**Testes e validações (sugestões)**
 
 Unit tests com JUnit + Mockito para BoardService e TaskService.
 
@@ -544,7 +515,7 @@ Validações: usar @Valid e @NotNull, @Size nas entidades / DTOs para validar in
 
 ---
 
-Melhorias futuras sugeridas
+**Melhorias futuras sugeridas**
 
 Implementar drag & drop no frontend (JS + fetch/AJAX) para mover tasks visualmente sem recarregar a página.
 
@@ -560,7 +531,7 @@ Melhorar UI/UX: editar task via modal, filtros, busca, labels, prioridades e pra
 
 ---
 
-Observações finais
+**Observações finais**
 
 Este README descreve a implementação passo a passo e a arquitetura do projeto que desenvolvemos. Se preferir, posso:
 
@@ -578,11 +549,11 @@ Ou enviar um git diff com todas as alterações para commit.
 
 ---
 
-Licença / Autor
+**Licença / Autor**
 
 Projeto criado como material didático e prático para aprendizado.
 
-Autor: Sérgio Santos
+**Autor:** Sérgio Santos
 
 
 
