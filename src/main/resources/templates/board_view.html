@@ -1,41 +1,137 @@
-<div class="card mb-3" th:each="task : ${column.tasks}">
-    <div class="card-body">
-        <h5 class="card-title" th:text="${task.title}"></h5>
-        <p class="card-text" th:text="${task.description}"></p>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Board: ' + ${board.name}"></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
 
-        <!-- Botões de Ação -->
-        <div class="d-flex gap-2">
-            <!-- Botão Bloquear -->
-            <button class="btn btn-sm btn-danger"
-                    th:if="${task.status != 'BLOQUEADA'}"
-                    data-bs-toggle="modal"
-                    th:attr="data-bs-target='#modalBloqueio' + ${task.id}">
-                <i class="bi bi-lock-fill"></i> Bloquear
-            </button> 
+<div class="container mt-4">
 
+    <h2 class="mb-4">Board: <span th:text="${board.name}"></span></h2>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <div class="row">
+        <!-- Loop de Colunas -->
+        <div class="col-md-4" th:each="column : ${board.columns}">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 th:text="${column.name}"></h5>
+                </div>
+                <div class="card-body">
+                    <!-- Loop de Tarefas -->
+                    <div class="card mb-3" th:each="task : ${column.tasks}">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${task.title}"></h5>
+                            <p class="card-text" th:text="${task.description}"></p>
 
-            
+                            <!-- Botões de Ação -->
+                            <div class="d-flex gap-2">
+                                <!-- Botão Bloquear -->
+                                <button class="btn btn-sm btn-danger"
+                                        th:if="${task.status != 'BLOQUEADA'}"
+                                        data-bs-toggle="modal"
+                                        th:attr="data-bs-target='#modalBloqueio' + ${task.id}">
+                                    <i class="bi bi-lock-fill"></i> Bloquear
+                                </button>
 
-            <!-- Botão Desbloquear -->
-            <a th:href="@{/tasks/{id}/unblock(id=${task.id})}"
-               class="btn btn-sm btn-success"
-               th:if="${task.status == 'BLOQUEADA'}">
-                <i class="bi bi-unlock-fill"></i> Desbloquear
-            </a> 
+                                <!-- Botão Desbloquear -->
+                                <a th:href="@{/tasks/{id}/unblock(id=${task.id})}"
+                                   class="btn btn-sm btn-success"
+                                   th:if="${task.status == 'BLOQUEADA'}">
+                                    <i class="bi bi-unlock-fill"></i> Desbloquear
+                                </a>
 
+                                <!-- Botão Histórico -->
+                                <button class="btn btn-sm btn-secondary"
+                                        data-bs-toggle="modal"
+                                        th:attr="data-bs-target='#modalHistorico' + ${task.id}">
+                                    <i class="bi bi-clock-history"></i> Histórico
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
+</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-            
+<!-- ============================= -->
+<!-- MODAIS DE BLOQUEIO E HISTÓRICO -->
+<!-- ============================= -->
 
-            <!-- Botão Histórico -->
-            <button class="btn btn-sm btn-secondary"
-                    data-bs-toggle="modal"
-                    th:attr="data-bs-target='#modalHistorico' + ${task.id}">
-                <i class="bi bi-clock-history"></i> Histórico
-            </button>
+<!-- Modal Bloqueio -->
+<div th:each="task : ${#lists.flatten(board.columns.^tasks)}"
+     th:id="'modalBloqueio' + ${task.id}"
+     class="modal fade"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <form th:action="@{/tasks/{id}/block(id=${task.id})}" method="post" class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Bloquear Tarefa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Informe o motivo do bloqueio para <strong th:text="${task.title}"></strong>:</p>
+                <textarea name="reason" class="form-control" rows="3" required></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-danger">Confirmar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Histórico -->
+<div th:each="task : ${#lists.flatten(board.columns.^tasks)}"
+     th:id="'modalHistorico' + ${task.id}"
+     class="modal fade"
+     tabindex="-1"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-secondary text-white">
+                <h5 class="modal-title">Histórico da Tarefa: <span th:text="${task.title}"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0">
+                <table class="table table-striped table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Ação</th>
+                            <th>Motivo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hist : ${task.history}">
+                            <td th:text="${#temporals.format(hist.actionDate, 'dd/MM/yyyy HH:mm')}"></td>
+                            <td>
+                                <span th:text="${hist.action}"
+                                      th:classappend="${hist.action == 'Bloqueada'} ? 'text-danger fw-bold' : 'text-success fw-bold'">
+                                </span>
+                            </td>
+                            <td th:text="${hist.reason}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(task.history)}">
+                            <td colspan="3" class="text-center text-muted">Nenhum registro encontrado.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
