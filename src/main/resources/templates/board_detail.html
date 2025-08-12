@@ -29,7 +29,32 @@
     <a th:href="@{/boards/tasks/{taskId}/move(taskId=${task.id})}" class="btn btn-sm btn-warning mt-2">Mover</a>
 </li>
 
-                        
+
+
+
+                <li class="list-group-item" th:each="task : ${column.tasks}">
+    <strong th:text="${task.title}">Título da Task</strong><br>
+    <small th:text="${task.description}">Descrição da Task</small><br>
+    <small>Status: <span th:text="${task.status}"></span></small>
+    <div class="mt-2">
+        <!-- botão mover já existente -->
+        <a th:href="@{/boards/tasks/{taskId}/move(taskId=${task.id})}" class="btn btn-sm btn-warning">Mover</a>
+
+        <!-- mostrar botão de bloquear ou desbloquear conforme estado -->
+        <form th:if="${!task.blocked}" th:action="@{/boards/tasks/{taskId}/block(taskId=${task.id})}" method="post" style="display:inline-block;">
+            <input type="hidden" name="reason" value="Bloqueado via UI">
+            <button type="submit" class="btn btn-sm btn-danger">Bloquear</button>
+        </form>
+
+        <form th:if="${task.blocked}" th:action="@{/boards/tasks/{taskId}/unblock(taskId=${task.id})}" method="post" style="display:inline-block;">
+            <input type="hidden" name="reason" value="Desbloqueado via UI">
+            <button type="submit" class="btn btn-sm btn-success">Desbloquear</button>
+        </form>
+
+        <!-- link para o histórico -->
+        <a th:href="@{/boards/tasks/{taskId}/history(taskId=${task.id})}" class="btn btn-sm btn-secondary">Histórico</a>
+    </div>
+</li>    
 
 
                         
