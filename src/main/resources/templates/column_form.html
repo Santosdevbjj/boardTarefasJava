@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Criar Coluna</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container py-4">
+    <h1>Criar Nova Coluna</h1>
+
+    <form th:action="@{/boards/{boardId}/columns(boardId=${boardId})}" th:object="${column}" method="post">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nome da Coluna</label>
+            <input type="text" th:field="*{name}" class="form-control" placeholder="Ex: Inicial, Pendente" required>
+        </div>
+        <button type="submit" class="btn btn-success">Salvar</button>
+        <a th:href="@{/boards/{boardId}(boardId=${boardId})}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</body>
+</html>
