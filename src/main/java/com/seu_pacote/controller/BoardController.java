@@ -13,6 +13,53 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+
+
+// imports adicionais necessários
+import com.seuprojeto.board.model.TaskHistory;
+
+import java.util.List;
+
+/**
+ * Exibe a página de histórico de uma task.
+ */
+@GetMapping("/tasks/{taskId}/history")
+public String viewTaskHistory(@PathVariable("taskId") Long taskId, Model model) {
+    List<TaskHistory> history = boardService.getTaskHistory(taskId);
+    model.addAttribute("history", history);
+    model.addAttribute("taskId", taskId);
+    return "task_history";
+}
+
+/**
+ * Bloqueia a task com um motivo informado.
+ */
+@PostMapping("/tasks/{taskId}/block")
+public String blockTask(@PathVariable("taskId") Long taskId,
+                        @RequestParam("reason") String reason,
+                        @RequestParam(value = "actor", required = false) String actor) {
+    boardService.blockTask(taskId, reason, actor);
+    Task task = boardService.getTaskById(taskId).orElseThrow();
+    Long boardId = task.getColumn().getBoard().getId();
+    return "redirect:/boards/" + boardId;
+}
+
+/**
+ * Desbloqueia a task com um motivo informado.
+ */
+@PostMapping("/tasks/{taskId}/unblock")
+public String unblockTask(@PathVariable("taskId") Long taskId,
+                          @RequestParam("reason") String reason,
+                          @RequestParam(value = "actor", required = false) String actor) {
+    boardService.unblockTask(taskId, reason, actor);
+    Task task = boardService.getTaskById(taskId).orElseThrow();
+    Long boardId = task.getColumn().getBoard().getId();
+    return "redirect:/boards/" + boardId;
+}
+
+
+
+
 /**
  * Controller para gerenciar as rotas e interações relacionadas a Boards.
  */
