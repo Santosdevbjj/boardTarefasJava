@@ -20,6 +20,28 @@ import com.seuprojeto.board.model.TaskHistory;
 
 import java.util.List;
 
+
+
+/**
+ * Bloqueia ou desbloqueia uma tarefa, registrando motivo no histórico.
+ */
+@PostMapping("/tasks/block")
+public String blockOrUnblockTask(
+        @RequestParam("taskId") Long taskId,
+        @RequestParam("actionType") String actionType,
+        @RequestParam("reason") String reason) {
+
+    boardService.blockOrUnblockTask(taskId, actionType, reason);
+
+    Task task = boardService.getTaskById(taskId).orElseThrow();
+    Long boardId = task.getColumn().getBoard().getId();
+
+    return "redirect:/boards/" + boardId;
+}
+
+
+
+
 /**
  * Exibe a página de histórico de uma task.
  */
