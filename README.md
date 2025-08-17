@@ -102,13 +102,13 @@ O projeto também exemplifica uso de operações assíncronas com @Async (por ex
 
 ---
 
-**Estrutura de pastas (sugestão / padrão usado no projeto)**
+**Estrutura de pastas**
 
 
 <img width="1080" height="1689" alt="Screenshot_20250812-182610" src="https://github.com/user-attachments/assets/543e6fe9-3d62-4b0c-86da-65e9eda2fe12" />
 
  
-      └── java/...                         # testes unitários (se implementados)
+      └── java/...                         # testes unitários
 
 > Observação: board_view.html é a versão final integrada com modais de bloqueio e histórico em linha. Alguns arquivos como board_detail.html existem como versões anteriores/alternativas — mantidos para referência.
 
